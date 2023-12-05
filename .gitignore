@@ -1,5 +1,6 @@
 .vsconfig
 QCAR/
+.DS_Store
 
 /[Ll]ibrary/
 /[Tt]emp/
