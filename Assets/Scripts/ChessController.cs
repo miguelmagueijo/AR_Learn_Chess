@@ -76,5 +76,7 @@ public class ChessController : MonoBehaviour {
 
         gameObject.transform.position = new Vector3(-4f * scale, 0, -4f * scale);
         gameObject.transform.localScale += new Vector3(scale, scale, scale);
+
+        gameObject.SetActive(false);
     }
 }
