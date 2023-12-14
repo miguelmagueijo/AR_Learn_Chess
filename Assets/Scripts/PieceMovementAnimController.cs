@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public enum PieceClasses {
@@ -105,7 +103,7 @@ public class PieceMovementAnimController : MonoBehaviour {
             case PieceClasses.Pawn:
                 break;
             default:
-                throw new System.Exception("NO OBJECT FOR NEW TYPE");
+                throw new Exception("NO OBJECT FOR NEW TYPE");
         }
 
         pieceScript.isWhite = isPlayerWhiteTeam;
