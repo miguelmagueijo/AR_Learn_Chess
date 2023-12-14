@@ -170,7 +170,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   badPlane: {fileID: 4726649798829391281, guid: c8df4a7eae63849fc9bcd84d2ff09aae, type: 3}
   goodPlane: {fileID: 3634002619362451480, guid: 19f025f4203504676a0b1cc8a6c0fc9f, type: 3}
-  pieceType: 2
+  pieceType: 3
   board: {fileID: 1734883756}
   startRow: 4
   startCol: 4
@@ -594,7 +594,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 886328de6a5c14cbb85854fdf1a5085b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StatusFilter: 1
+  StatusFilter: 0
   UsePoseSmoothing: 0
   AnimationCurve:
     serializedVersion: 2
@@ -650,7 +650,7 @@ MonoBehaviour:
   mHeight: 50
   mRuntimeTexture: {fileID: 0}
   mMotionHint: 1
-  mTrackingOptimization: 0
+  mTrackingOptimization: 2
   mTrackingOptimizationNeedsUpgrade: 0
   mPreview: {fileID: 1577825207}
 --- !u!114 &1577825207
@@ -699,7 +699,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2005738046}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: PieceMovementParent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
