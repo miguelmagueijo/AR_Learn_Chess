@@ -1,7 +1,9 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PieceSelectAction : MonoBehaviour {
-    
+    [SerializeField]
+    public PieceTypeSharer.PieceClasses pType;
 
     void Update() {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -9,7 +11,10 @@ public class PieceSelectAction : MonoBehaviour {
 
         if (Input.GetMouseButtonDown(0)) {
             if (Physics.Raycast(ray, out hit) && hit.collider.gameObject == gameObject) {
-                Debug.Log("Button Clicked");
+                PieceTypeSharer.savedType = pType;
+                Debug.Log("Changed piece save type to " + pType);
+                SceneManager.LoadScene("MovePiece");
+                return;
             }
         }
 

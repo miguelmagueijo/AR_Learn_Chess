@@ -3,15 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public enum PieceClasses {
-    Rook,
-    Knight,
-    Bishop, 
-    Queen,
-    King,
-    Pawn
-}
-
 public class PieceMovementAnimController : MonoBehaviour {
     [SerializeField]
     public GameObject badPlane;
@@ -26,9 +17,6 @@ public class PieceMovementAnimController : MonoBehaviour {
 
     [SerializeField]
     public GameObject successPanel;
-    
-    [SerializeField]
-    public PieceClasses pieceType;
 
     [SerializeField]
     public GameObject board;
@@ -46,6 +34,8 @@ public class PieceMovementAnimController : MonoBehaviour {
 
     [SerializeField]
     public const int scale = 10;
+
+    private PieceTypeSharer.PieceClasses pieceType;
 
     private List<GameObject> enemies = new();
 
@@ -120,32 +110,32 @@ public class PieceMovementAnimController : MonoBehaviour {
         Vector3 startPos = new Vector3(startY, 0, startX); 
 
         switch (pieceType) {
-            case PieceClasses.Rook:
+            case PieceTypeSharer.PieceClasses.Rook:
                 pieceObj = Instantiate(Resources.Load("Rook" + prefabSufix) as GameObject);
                 pieceObj.AddComponent<Rook>();
                 pieceScript = pieceObj.GetComponent<Rook>();
                 break;
-            case PieceClasses.Bishop:
+            case PieceTypeSharer.PieceClasses.Bishop:
                 pieceObj = Instantiate(Resources.Load("Bishop" + prefabSufix) as GameObject);
                 pieceObj.AddComponent<Bishop>();
                 pieceScript = pieceObj.GetComponent<Bishop>();
                 break;
-            case PieceClasses.Knight:
+            case PieceTypeSharer.PieceClasses.Knight:
                 pieceObj = Instantiate(Resources.Load("Knight" + prefabSufix) as GameObject);
                 pieceObj.AddComponent<Knight>();
                 pieceScript = pieceObj.GetComponent<Knight>();
                 break;
-            case PieceClasses.King:
+            case PieceTypeSharer.PieceClasses.King:
                 pieceObj = Instantiate(Resources.Load("King" + prefabSufix) as GameObject);
                 pieceObj.AddComponent<King>();
                 pieceScript = pieceObj.GetComponent<King>();
                 break;
-            case PieceClasses.Queen:
+            case PieceTypeSharer.PieceClasses.Queen:
                 pieceObj = Instantiate(Resources.Load("Queen" + prefabSufix) as GameObject);
                 pieceObj.AddComponent<Queen>();
                 pieceScript = pieceObj.GetComponent<Queen>();
                 break;
-            case PieceClasses.Pawn:
+            case PieceTypeSharer.PieceClasses.Pawn:
                 break;
             default:
                 throw new Exception("NO OBJECT FOR NEW TYPE");
@@ -164,6 +154,8 @@ public class PieceMovementAnimController : MonoBehaviour {
     }
 
     void Start() {
+        this.pieceType = PieceTypeSharer.savedType;
+
         isPlayerWhiteTeam = UnityEngine.Random.value > 0.5;
         this.boardScript = this.board.GetComponent<Board>();
 
