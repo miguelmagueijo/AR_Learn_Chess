@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public enum PieceClasses {
@@ -16,6 +17,15 @@ public class PieceMovementAnimController : MonoBehaviour {
     public GameObject badPlane;
     [SerializeField]
     public GameObject goodPlane;
+
+    [SerializeField]
+    public TMP_Text objectiveText;
+
+    [SerializeField]
+    public GameObject objectivePanel;
+
+    [SerializeField]
+    public GameObject successPanel;
     
     [SerializeField]
     public PieceClasses pieceType;
@@ -24,12 +34,20 @@ public class PieceMovementAnimController : MonoBehaviour {
     public GameObject board;
 
     [SerializeField]
+    public int totalEnemyPieces = 3;
+
+    [SerializeField]
+    public bool startRandomPos = false;
+
+    [SerializeField]
     public int startRow = 0;
     [SerializeField]
     public int startCol = 0;
 
     [SerializeField]
-    public int scale = 10;
+    public const int scale = 10;
+
+    private List<GameObject> enemies = new();
 
     private GameObject pieceObj;
 
@@ -41,10 +59,23 @@ public class PieceMovementAnimController : MonoBehaviour {
 
     private bool isPlayerWhiteTeam;
 
-    private void putRandomEnemy() {
-        while(true) {
-            int x = UnityEngine.Random.Range(0, 7);
-            int y = UnityEngine.Random.Range(0, 7);
+    private void updateObjectiveText() {
+        if (enemies.Count == 0) {
+            this.objectivePanel.SetActive(false);
+            this.successPanel.SetActive(true);
+            
+            return;
+        }
+        
+        this.objectiveText.SetText("Objetivo: capture os restantes " + enemies.Count + " inimigos");
+
+        
+    }
+
+    private void putEnemies() {
+        while(enemies.Count < totalEnemyPieces) {
+            int x = UnityEngine.Random.Range(0, 8);
+            int y = UnityEngine.Random.Range(0, 8);
 
             if (boardScript.hasPiece(x, y))
                 continue;
@@ -60,19 +91,33 @@ public class PieceMovementAnimController : MonoBehaviour {
 
             boardScript.putPieceIn(enemyScript, x, y);
             enemy.transform.localPosition = new Vector3(y, 0, x);
-            return;
+            enemy.transform.localRotation = new Quaternion(0, 0, 0, 0);
+            enemy.transform.localScale = new Vector3(1, 1, 1);
+            enemies.Add(enemy);
         }
+
+        this.updateObjectiveText();
     }
 
-    void Start() {
-        isPlayerWhiteTeam = UnityEngine.Random.value > 0.5;
+    private void putPiece() {
         string prefabSufix = isPlayerWhiteTeam ? "Light" : "Dark";
-        
-        this.boardScript = this.board.GetComponent<Board>();
 
-        this.putRandomEnemy();
-        
-        Vector3 startPos = new Vector3(startCol, 0, startRow); 
+        int startX = startRow;
+        int startY = startCol;
+
+        if (startRandomPos) {
+            while (true) {
+                startX = UnityEngine.Random.Range(0, 8);
+                startY = UnityEngine.Random.Range(0, 8);
+
+                if (boardScript.hasPiece(startX, startY))
+                    continue;
+                
+                break;
+            }
+        }
+
+        Vector3 startPos = new Vector3(startY, 0, startX); 
 
         switch (pieceType) {
             case PieceClasses.Rook:
@@ -109,13 +154,26 @@ public class PieceMovementAnimController : MonoBehaviour {
         pieceScript.isWhite = isPlayerWhiteTeam;
         pieceObj.transform.parent = board.transform;
         pieceObj.transform.localPosition = startPos;
-        boardScript.putPieceIn(pieceScript, startRow, startCol);
-        showMovementPlanes();
+        pieceObj.transform.localRotation = new Quaternion(0, 0, 0, 0);
+        pieceObj.transform.localScale = new Vector3(1, 1, 1);
+        boardScript.putPieceIn(pieceScript, startX, startY);
+
         pStartMovePos = pEndMovePos = pieceObj.transform.localPosition;
 
+        this.showMovementPlanes();
+    }
 
+    void Start() {
+        isPlayerWhiteTeam = UnityEngine.Random.value > 0.5;
+        this.boardScript = this.board.GetComponent<Board>();
+
+        this.putEnemies();
+        this.putPiece();
+        
         this.transform.parent.position = new Vector3(-4f * scale, 0, -4f * scale);
         this.transform.parent.localScale = new Vector3(scale, scale, scale);
+        this.objectivePanel.SetActive(true);
+        this.successPanel.SetActive(false);
     }
 
     public void showMovementPlanes() {
@@ -141,6 +199,7 @@ public class PieceMovementAnimController : MonoBehaviour {
         foreach (GameObject plane in movementPlanes) {
             Destroy(plane);
         }
+        movementPlanes = new();
     }
 
     
@@ -181,9 +240,51 @@ public class PieceMovementAnimController : MonoBehaviour {
     public void movePieceTo(int x, int y) {
         removeMovementPlanes();
         boardScript.removePieceFrom(pieceScript.x, pieceScript.y);
+
+        if (boardScript.hasPiece(x, y)) {
+            DefaultChessPiece foundPieceScript = boardScript.getPiece(x,y);
+            for (int i = 0; i < enemies.Count; i++) {
+                DefaultChessPiece enemyScript = enemies[i].GetComponent<DefaultChessPiece>();
+                if (foundPieceScript == enemyScript) {
+                    GameObject enemy = enemies[i];
+                    Destroy(enemy);
+                    enemies.RemoveAt(i);
+                    boardScript.removePieceFrom(x, y);
+                    break;
+                }
+            }
+            this.updateObjectiveText();
+        }
+
         boardScript.putPieceIn(pieceScript, x, y);
         startPieceMovement();
 
         Debug.Log("Piece needs to be moved to X: " + x + ", Y:" + y);
+    }
+
+
+    public void restartBoard() {
+        if (this.pieceMoving) {
+            return;
+        }
+
+        this.boardScript.wipePositions();
+        removeMovementPlanes();
+
+        for (int i = 0; i < enemies.Count; i++) {
+            Destroy(enemies[i]);
+        }
+
+        Destroy(pieceObj);
+        
+        this.enemies = new();
+        this.pieceObj = null;
+        this.pieceScript = null;
+
+        this.putEnemies();
+        this.putPiece();
+
+        this.objectivePanel.SetActive(true);
+        this.successPanel.SetActive(false);
     }
 }

@@ -7,8 +7,12 @@ public class Board : MonoBehaviour {
         return x >= 0 && x <= 7 && y >= 0 && y <= 7;
     }
 
+    public DefaultChessPiece getPiece(int x, int y) {
+        return this.positions[x, y];
+    }
+
     public bool hasPiece(int x, int y) {
-        return this.positions[x, y] != null;
+        return this.getPiece(x, y) != null;
     }
 
     public void removePieceFrom(int x, int y) {
@@ -31,5 +35,9 @@ public class Board : MonoBehaviour {
         positions[x,y] = piece;
         piece.x = x;
         piece.y = y;
+    }
+
+    public void wipePositions() {
+        positions = new DefaultChessPiece[8,8];
     }
 }

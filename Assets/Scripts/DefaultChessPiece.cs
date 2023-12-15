@@ -18,7 +18,7 @@ public abstract class DefaultChessPiece : MonoBehaviour {
         return enemy.isWhite != this.isWhite;
     }
 
-    public void moveTo(Vector3 targetPos) {
-    
+    public bool isIn(int x, int y) {
+        return this.x == x && this.y == y;
     }
 }
