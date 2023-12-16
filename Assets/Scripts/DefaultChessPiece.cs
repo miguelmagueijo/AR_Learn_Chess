@@ -8,7 +8,7 @@ public abstract class DefaultChessPiece : MonoBehaviour {
     public int x;
     public int y;
 
-    private bool isMoving = false;
+    public bool hasMoved = false;
 
     public bool isWhite = false;
 
@@ -20,5 +20,9 @@ public abstract class DefaultChessPiece : MonoBehaviour {
 
     public bool isIn(int x, int y) {
         return this.x == x && this.y == y;
+    }
+
+    public virtual bool canBePromoted() {
+        return false;
     }
 }

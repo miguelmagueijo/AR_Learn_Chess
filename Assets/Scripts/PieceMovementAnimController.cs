@@ -16,6 +16,9 @@ public class PieceMovementAnimController : MonoBehaviour {
     public GameObject objectivePanel;
 
     [SerializeField]
+    public GameObject promotionMenu;
+
+    [SerializeField]
     public GameObject successPanel;
 
     [SerializeField]
@@ -53,13 +56,9 @@ public class PieceMovementAnimController : MonoBehaviour {
         if (enemies.Count == 0) {
             this.objectivePanel.SetActive(false);
             this.successPanel.SetActive(true);
-            
-            return;
         }
         
-        this.objectiveText.SetText("Objetivo: capture os restantes " + enemies.Count + " inimigos");
-
-        
+        this.objectiveText.SetText(PieceTypeSharer.getObjectiveMessage(this.pieceType, enemies.Count));
     }
 
     private void putEnemies() {
@@ -136,6 +135,18 @@ public class PieceMovementAnimController : MonoBehaviour {
                 pieceScript = pieceObj.GetComponent<Queen>();
                 break;
             case PieceTypeSharer.PieceClasses.Pawn:
+                pieceObj = Instantiate(Resources.Load("Pawn" + prefabSufix) as GameObject);
+                pieceObj.AddComponent<Pawn>();
+                pieceScript = pieceObj.GetComponent<Pawn>();
+                startPos.z = startX = isPlayerWhiteTeam ? 1 : 6;
+                do {
+                    if (boardScript.hasPiece(startX, startY)) {
+                        startY = UnityEngine.Random.Range(0, 8);
+                        continue;
+                    }
+                    break;
+                } while(true);
+                startPos.x = startY;
                 break;
             default:
                 throw new Exception("NO OBJECT FOR NEW TYPE");
@@ -151,6 +162,7 @@ public class PieceMovementAnimController : MonoBehaviour {
         pStartMovePos = pEndMovePos = pieceObj.transform.localPosition;
 
         this.showMovementPlanes();
+        this.objectiveText.SetText(PieceTypeSharer.getObjectiveMessage(this.pieceType, enemies.Count));
     }
 
     void Start() {
@@ -166,6 +178,7 @@ public class PieceMovementAnimController : MonoBehaviour {
         this.transform.parent.localScale = new Vector3(scale, scale, scale);
         this.objectivePanel.SetActive(true);
         this.successPanel.SetActive(false);
+        this.promotionMenu.SetActive(false);
     }
 
     public void showMovementPlanes() {
@@ -194,6 +207,48 @@ public class PieceMovementAnimController : MonoBehaviour {
         movementPlanes = new();
     }
 
+    public void showPromotionMenu() {
+        if (!pieceScript.canBePromoted()) {
+            return;
+        }
+
+        this.promotionMenu.SetActive(true);
+    }
+
+    public void promoteTo(string promoteTypeStr) {
+        switch(promoteTypeStr.ToLower()) {
+            case "q":
+                this.pieceType = PieceTypeSharer.PieceClasses.Queen;
+                break;
+            case "r":
+                this.pieceType = PieceTypeSharer.PieceClasses.Rook;
+                break;
+            case "k":
+                this.pieceType = PieceTypeSharer.PieceClasses.Knight;
+                break;
+            case "b":
+                this.pieceType = PieceTypeSharer.PieceClasses.Bishop;
+                break;
+            default:
+                this.pieceType = PieceTypeSharer.PieceClasses.Queen;
+                break;
+        }
+
+        this.startRow = pieceScript.x;
+        this.startCol = pieceScript.y;
+
+        removeMovementPlanes();
+        boardScript.removePieceFrom(pieceScript.x, pieceScript.y);
+        Destroy(pieceObj);
+        this.pieceObj = null;
+        this.pieceScript = null;
+        this.startRandomPos = false;
+        
+        this.putPiece();
+
+        this.promotionMenu.SetActive(false);
+    }
+
     
     float moveTime;
     float timeToReachTarget = 2;
@@ -210,6 +265,7 @@ public class PieceMovementAnimController : MonoBehaviour {
             if (pieceObj.transform.localPosition == pEndMovePos) {
                 pieceMoving = false;
                 showMovementPlanes();
+                showPromotionMenu();
             }
         }
     }
@@ -249,6 +305,7 @@ public class PieceMovementAnimController : MonoBehaviour {
         }
 
         boardScript.putPieceIn(pieceScript, x, y);
+        pieceScript.hasMoved = true;
         startPieceMovement();
 
         Debug.Log("Piece needs to be moved to X: " + x + ", Y:" + y);
@@ -274,6 +331,8 @@ public class PieceMovementAnimController : MonoBehaviour {
         this.pieceScript = null;
 
         this.putEnemies();
+
+        this.pieceType = PieceTypeSharer.savedType;
         this.putPiece();
 
         this.objectivePanel.SetActive(true);

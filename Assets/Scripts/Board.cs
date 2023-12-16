@@ -15,6 +15,12 @@ public class Board : MonoBehaviour {
         return this.getPiece(x, y) != null;
     }
 
+    public bool hasEnemy(DefaultChessPiece piece, int x, int y) {
+        DefaultChessPiece enemy = this.getPiece(x, y);
+        
+        return enemy != null && piece.isEnemy(enemy);
+    }
+
     public void removePieceFrom(int x, int y) {
         this.positions[x, y] = null;
     }
@@ -32,7 +38,7 @@ public class Board : MonoBehaviour {
     }
 
     public void putPieceIn(DefaultChessPiece piece, int x, int y) {
-        positions[x,y] = piece;
+        positions[x, y] = piece;
         piece.x = x;
         piece.y = y;
     }
