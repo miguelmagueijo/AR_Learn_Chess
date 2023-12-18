@@ -66,8 +66,13 @@ public class ChessController : MonoBehaviour {
                     continue;
                 }
 
-                occupiedPositions[i, j] = Instantiate(initialLayout[i,j], boardPositions[i,j], Quaternion.identity);
+                GameObject pieceObj = Instantiate(initialLayout[i,j], boardPositions[i,j], Quaternion.identity);
+                occupiedPositions[i, j] = pieceObj;
                 occupiedPositions[i, j].transform.parent = chessBoard.transform;
+
+                if (i == 7) {
+                    pieceObj.transform.localRotation = new Quaternion(0, 180, 0, 0);
+                }
             }
         }
 
