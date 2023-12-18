@@ -6,8 +6,15 @@ using UnityEngine;
 public class PieceMovementAnimController : MonoBehaviour {
     [SerializeField]
     public GameObject badPlane;
+
     [SerializeField]
     public GameObject goodPlane;
+
+    [SerializeField]
+    public TMP_Text pieceNameTxt;
+
+    [SerializeField]
+    public TMP_Text movementPieceInfo;
 
     [SerializeField]
     public TMP_Text objectiveText;
@@ -155,7 +162,7 @@ public class PieceMovementAnimController : MonoBehaviour {
         pieceScript.isWhite = isPlayerWhiteTeam;
         pieceObj.transform.parent = board.transform;
         pieceObj.transform.localPosition = startPos;
-        pieceObj.transform.localRotation = new Quaternion(0, 0, 0, 0);
+        pieceObj.transform.localRotation = isPlayerWhiteTeam ? new Quaternion(0, 0, 0, 0) : new Quaternion(0, 180, 0, 0);
         pieceObj.transform.localScale = new Vector3(1, 1, 1);
         boardScript.putPieceIn(pieceScript, startX, startY);
 
@@ -163,6 +170,18 @@ public class PieceMovementAnimController : MonoBehaviour {
 
         this.showMovementPlanes();
         this.objectiveText.SetText(PieceTypeSharer.getObjectiveMessage(this.pieceType, enemies.Count));
+        
+        if (PieceTypeSharer.pieceName.TryGetValue(this.pieceType, out string pName)) {
+            this.pieceNameTxt.SetText(pName);
+        } else {
+            this.pieceNameTxt.SetText("Peça desconhecida");
+        }
+
+        if (PieceTypeSharer.pieceMovementInfo.TryGetValue(this.pieceType, out string pMovInfo)) {
+            this.movementPieceInfo.SetText(pMovInfo);
+        } else {
+            this.movementPieceInfo.SetText("Não existe descrição para este tipo de peça fornecido");
+        }
     }
 
     void Start() {

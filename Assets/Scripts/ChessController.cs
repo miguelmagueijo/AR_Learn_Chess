@@ -38,7 +38,7 @@ public class ChessController : MonoBehaviour {
     private Vector3[,] boardPositions = new Vector3[8,8];
     private GameObject[,] occupiedPositions = new GameObject[8,8];
 
-    private void Start() {
+    private void Awake() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 boardPositions[i, j] = new Vector3(j, 1, i);
@@ -66,14 +66,17 @@ public class ChessController : MonoBehaviour {
                     continue;
                 }
 
-                occupiedPositions[i, j] = Instantiate(initialLayout[i,j], boardPositions[i,j], Quaternion.identity);
+                GameObject pieceObj = Instantiate(initialLayout[i,j], boardPositions[i,j], Quaternion.identity);
+                occupiedPositions[i, j] = pieceObj;
                 occupiedPositions[i, j].transform.parent = chessBoard.transform;
+
+                if (i == 7) {
+                    pieceObj.transform.localRotation = new Quaternion(0, 180, 0, 0);
+                }
             }
         }
 
         gameObject.transform.position = new Vector3(-4f * scale, 0, -4f * scale);
         gameObject.transform.localScale += new Vector3(scale, scale, scale);
-
-        gameObject.SetActive(false);
     }
 }
