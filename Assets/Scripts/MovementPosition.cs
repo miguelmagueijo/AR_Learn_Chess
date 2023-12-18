@@ -20,11 +20,6 @@ public class MovementPosition : MonoBehaviour
                     this.controller.movePieceTo(x, y);
             }
         }
-
-
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) {
-            Debug.Log("TAPPING ME");
-        }
     }
 
     public void setMovementController(PieceMovementAnimController reference) {

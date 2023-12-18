@@ -8,3 +8,6 @@ https://uxwing.com/
 Main menu image -> Eugene Chystiakov:
 https://unsplash.com/pt-br/@eugenechystiakov?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash
 https://unsplash.com/pt-br/fotografias/peca-de-xadrez-preta-e-branca-no-tabuleiro-de-xadrez-de-madeira-marrom-nO3tLupMjzY?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash
+
+App icon generated with AI (Leonardo AI with the prompt "Chess king piece icon" on the Leonardo Diffusion XL model)
+https://app.leonardo.ai/
